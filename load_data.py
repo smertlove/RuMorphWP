@@ -1,7 +1,6 @@
 import pathlib
 import requests
 
-
 NAME2URL = {
     "train.csv": "https://github.com/sigmorphon/2022SegmentationST/blob/main/data/rus.word.train.tsv",
     "dev.csv": "https://github.com/sigmorphon/2022SegmentationST/blob/main/data/rus.word.dev.tsv",
@@ -13,11 +12,10 @@ NAME2URL = {
 def download_file(url: str, dest_path: pathlib.Path, chunk_size: int = 8192) -> None:
     response = requests.get(url, stream=True)
     response.raise_for_status()
-    
+
     with open(dest_path, "wb") as file:
         for chunk in response.iter_content(chunk_size=chunk_size):
             file.write(chunk)
-
 
 
 def main():
