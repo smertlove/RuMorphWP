@@ -13,9 +13,9 @@ def download_file(url: str, dest_path: pathlib.Path, chunk_size: int = 8192) -> 
     response = requests.get(url, stream=True)
     response.raise_for_status()
 
-    with open(dest_path, "wb") as file:
-        for chunk in response.iter_content(chunk_size=chunk_size):
-            file.write(chunk)
+    with open(dest_path, "w") as file:
+        file.write(response.text)
+           
 
 
 def main():
