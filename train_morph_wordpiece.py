@@ -4,9 +4,9 @@ from tokenizers.trainers import WordPieceTrainer
 from transformers import PreTrainedTokenizerFast
 import pathlib
 
-
 SPECIAL_TOKENS = ["<s>", "<pad>", "</s>", "<unk>", "<mask>"]
 CONTINUING_SUBWORD_PREFIX = "##"
+
 
 def build_wordpiece_tokenizer(lowercase: bool) -> Tokenizer:
     tokenizer = Tokenizer(
@@ -55,11 +55,11 @@ def train_bart_tokenizer(
     vocab_size: int = 16384,
     min_frequency: int = 2,
     lowercase: bool = False,
-    save_path: str = None
+    save_path: str = None,
 ) -> Tokenizer:
 
     tokenizer = build_wordpiece_tokenizer(lowercase=lowercase)
-    
+
     trainer = WordPieceTrainer(
         vocab_size=vocab_size,
         min_frequency=min_frequency,
@@ -68,7 +68,12 @@ def train_bart_tokenizer(
         continuing_subword_prefix=CONTINUING_SUBWORD_PREFIX,
     )
 
-    tokenizer.train([file_path,], trainer)
+    tokenizer.train(
+        [
+            file_path,
+        ],
+        trainer,
+    )
 
     current_vocab = tokenizer.get_vocab()
 
@@ -79,39 +84,36 @@ def train_bart_tokenizer(
 
     tokens_to_add = []
     for char in other_chars:
-        # Добавляем сам символ (если его вдруг нет)
         if char not in current_vocab:
             tokens_to_add.append(char)
 
-    # Добавляем токены в модель
     tokenizer.add_tokens(tokens_to_add)
 
     hf_tokenizer = PreTrainedTokenizerFast(
-            tokenizer_object=tokenizer,
-            bos_token="<s>",
-            eos_token="</s>",
-            sep_token="</s>",
-            cls_token="<s>",
-            unk_token="<unk>",
-            pad_token="<pad>",
-            mask_token="<mask>",
-            model_max_length=1024,
-            name_or_path=save_path,
-        )
+        tokenizer_object=tokenizer,
+        bos_token="<s>",
+        eos_token="</s>",
+        sep_token="</s>",
+        cls_token="<s>",
+        unk_token="<unk>",
+        pad_token="<pad>",
+        mask_token="<mask>",
+        model_max_length=1024,
+        name_or_path=save_path,
+    )
 
     hf_tokenizer.save_pretrained(save_path)
-    
-    
+
     return hf_tokenizer
 
+
 if __name__ == "__main__":
-    datapath =pathlib.Path("./data/segments_flat.txt")
+    datapath = pathlib.Path("./data/segments_flat.txt")
     assert datapath.exists()
 
     tokenizers_path = pathlib.Path("./tokenizers")
     tokenizers_path.mkdir(exist_ok=True)
 
     train_bart_tokenizer(
-        file_path=str(datapath),
-        save_path=str(tokenizers_path / "morph-wp2")
+        file_path=str(datapath), save_path=str(tokenizers_path / "morph-wp2")
     )

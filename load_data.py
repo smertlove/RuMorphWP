@@ -9,7 +9,10 @@ NAME2URL = {
 }
 
 
-def download_file(url: str, dest_path: pathlib.Path,) -> None:
+def download_file(
+    url: str,
+    dest_path: pathlib.Path,
+) -> None:
     response = requests.get(url, stream=True)
     response.raise_for_status()
 

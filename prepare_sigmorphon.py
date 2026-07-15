@@ -6,7 +6,7 @@ from tqdm import tqdm
 def main():
 
     curdir = pathlib.Path(__file__).parent.resolve()
-    datadir = curdir / "data" 
+    datadir = curdir / "data"
     assert datadir.exists()
 
     target_name = "sigmorphon.txt"
@@ -23,7 +23,6 @@ def main():
 
             for split in tqdm(df["split"].dropna().tolist()):
                 file.write(split.replace(" @@", "|##").lower() + "|")
-
 
 
 if __name__ == "__main__":
